@@ -150,7 +150,7 @@ class Cat extends Component {
         this.numberGet();
       }
     }
-    if (data.isSuccessFul == false) {
+    if (!data.isSuccessFul) {
       alert(data.errors[0]);
     }
   }
