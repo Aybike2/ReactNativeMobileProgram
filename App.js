@@ -10,7 +10,13 @@ import {
   TouchableOpacity,
   Alert,
   Linking,
+  StyleSheet,
 } from 'react-native';
+import {SwipeListView} from 'react-native-swipe-list-view';
+
+import {LogBox} from 'react-native';
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 class Cat extends Component {
   constructor(props) {
@@ -35,7 +41,7 @@ class Cat extends Component {
   componentDidMount() {}
 
   async numberGet() {
-    let data = await fetch('http://192.168.0.12:1999/api/category', {
+    let data = await fetch('http://192.168.1.158:1999/api/category', {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -48,6 +54,7 @@ class Cat extends Component {
   }
 
   async numberDelete(mahmut) {
+    console.log('gfdgfsg', mahmut);
     Alert.alert('DELETE', 'Do you want to delete?', [
       {
         text: 'Cancel',
@@ -58,7 +65,7 @@ class Cat extends Component {
         text: 'DELETE',
         onPress: async () => {
           let data = await fetch(
-            'http://192.168.0.12:1999/api/category/' + mahmut,
+            'http://192.168.1.158:1999/api/category/' + mahmut,
             {
               method: 'DELETE',
               headers: {
@@ -111,9 +118,9 @@ class Cat extends Component {
       this.setState({yorum: 'Obesity', bg: 'red'});
     } else if (calculate < 30 && calculate >= 25) {
       this.setState({yorum: 'Overweight', bg: 'yellow'});
-    } else if (calculate < 25 && calculate >= 18) {
+    } else if (calculate < 25 && calculate >= 18.5) {
       this.setState({yorum: 'Normal weight', bg: 'green'});
-    } else if (calculate < 18) {
+    } else if (calculate < 18.5) {
       this.setState({yorum: 'Underweight', bg: 'red'});
     }
 
@@ -128,7 +135,7 @@ class Cat extends Component {
     console.log('number1', this.state.number1);
     console.log('namesurname', this.state.nameSurname);
 
-    let data = await fetch('http://192.168.0.12:1999/api/category', {
+    let data = await fetch('http://192.168.1.158:1999/api/category', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -358,7 +365,7 @@ class Cat extends Component {
               </View>
 
               <View>
-                {this.state.gelenVeriler.map((veri, index) => {
+                {/* {this.state.gelenVeriler.map((veri, index) => {
                   return (
                     <View>
                       <TouchableOpacity
@@ -400,8 +407,72 @@ class Cat extends Component {
                       </TouchableOpacity>
                     </View>
                   );
-                })}
-                <View></View>
+                })} */}
+                <View style={{height: 250}}>
+                  <SwipeListView
+                    data={this.state.gelenVeriler}
+                    renderItem={(data, rowMap) => (
+                      <View style={styles.rowFront}>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+
+                            opacity: 0.7,
+                          }}>
+                          <View style={{flex: 5, paddingLeft: 20}}>
+                            <Text
+                              style={{
+                                fontSize: 20,
+                                color: 'white',
+                                fontWeight: 'bold',
+                                fontStyle: 'italic',
+                                fontFamily: 'Times New Roman',
+                              }}>
+                              {data.item.title}
+                            </Text>
+                          </View>
+                          <View style={{flex: 3}}>
+                            <Text style={{fontSize: 17, color: 'white'}}>
+                              {data.item.description}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    )}
+                    renderHiddenItem={(data, rowMap) => (
+                      <View style={styles.rowBack}>
+                        <View style={{}}>
+                          <TouchableOpacity
+                            onPress={() =>
+                              this.callPerson(
+                                data.item.description,
+                                'ali',
+                                'talha',
+                              )
+                            }>
+                            <ImageBackground
+                              style={{
+                                marginLeft: 10,
+                                width: 30,
+                                height: 30,
+                              }}
+                              source={require('../AybikeProject1/images/call.png')}></ImageBackground>
+                          </TouchableOpacity>
+                        </View>
+                        <View style={{}}>
+                          <TouchableOpacity
+                            onPress={() => this.numberDelete(data.item.id)}>
+                            <ImageBackground
+                              style={{marginRight: 30, width: 30, height: 30}}
+                              source={require('../AybikeProject1/images/delete.jpg')}></ImageBackground>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    )}
+                    leftOpenValue={75}
+                    rightOpenValue={-75}
+                  />
+                </View>
               </View>
             </ImageBackground>
           </View>
@@ -410,5 +481,22 @@ class Cat extends Component {
     );
   }
 }
-
+const styles = StyleSheet.create({
+  rowFront: {
+    alignItems: 'center',
+    backgroundColor: '#CCC',
+    borderBottomColor: 'black',
+    borderBottomWidth: 1,
+    justifyContent: 'center',
+    height: 50,
+  },
+  rowBack: {
+    alignItems: 'center',
+    backgroundColor: '#DDD',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: 15,
+  },
+});
 export default Cat;
